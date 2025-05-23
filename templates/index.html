@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🔥 Algerian Forest Fire Prediction System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Reset and Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, #f0f8ff, #e1f5fe);
+            color: #333;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8em;
+            color: #d32f2f;
+            margin-bottom: 15px;
+            animation: slideInDown 1s ease-out;
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            color: #555;
+            animation: fadeIn 1.2s ease-in;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeInScale 1s ease-in-out;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .card h3 {
+            color: #007bff;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .range {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #777;
+        }
+
+        .btn-start {
+            display: block;
+            margin: 50px auto 0;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .btn-start:hover {
+            background-color: #218838;
+        }
+
+        /* Flame animations */
+        .flame {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at 50% 0%, #ffeb3b, #ff9800, #f44336, #d32f2f);
+            border-radius: 50% 50% 0 0;
+            transform: scaleY(0.9) rotate(45deg);
+            opacity: 0;
+            animation:
+                flameBurn 3s infinite ease-out,
+                flameMove 6s infinite ease-in-out;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        .flame:nth-child(1) {
+            top: 5%;
+            left: -4%;
+        }
+
+        .flame:nth-child(2) {
+            top: 75%;
+            right: -4%;
+        }
+
+        .flame:nth-child(3) {
+            bottom: 10%;
+            left: 30%;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes flameBurn {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes flameMove {
+            0%, 100% { transform: translateY(0) rotate(45deg); }
+            50% { transform: translateY(-10px) rotate(50deg); }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            p.subtitle {
+                font-size: 1em;
+            }
+
+            .btn-start {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flame"></div>
+    <div class="flame"></div>
+    <div class="flame"></div>
+
+    <h1>🔥 Welcome to Algerian Forest Fire Predictor</h1>
+    <p class="subtitle">Understand how each parameter affects the Fire Weather Index (FWI)</p>
+
+    <div class="container">
+        <div class="card">
+            <h3>🌡️ Temperature</h3>
+            <p>Represents ambient temperature in degrees Celsius. Higher values often indicate higher FWI risk.</p>
+            <span class="range">Range: 0°C – 50°C</span>
+        </div>
+
+        <div class="card">
+            <h3>💧 Relative Humidity (RH)</h3>
+            <p>Percentage of humidity in the air. Low RH means drier conditions, increasing fire risk.</p>
+            <span class="range">Range: 0% – 100%</span>
+        </div>
+
+        <div class="card">
+            <h3>🌬️ Winds</h3>
+            <p>Wind speed in km/h. Strong winds can rapidly spread wildfires.</p>
+            <span class="range">Range: 0 – 50 km/h</span>
+        </div>
+
+        <div class="card">
+            <h3>🌧️ Rain</h3>
+            <p>Amount of rainfall in mm. More rain usually means lower fire probability.</p>
+            <span class="range">Range: 0 – 20 mm</span>
+        </div>
+
+        <div class="card">
+            <h3>🔥 FFMC</h3>
+            <p>Fine Fuel Moisture Code. Measures moisture in small litter fuels. High FFMC = fast ignition.</p>
+            <span class="range">Range: 0 – 100</span>
+        </div>
+
+        <div class="card">
+            <h3>🌲 DMC</h3>
+            <p>Duff Moisture Code. Indicates moisture in loosely compacted organic layers. Lower = drier.</p>
+            <span class="range">Range: 0 – 200</span>
+        </div>
+
+        <div class="card">
+            <h3>🚀 ISI</h3>
+            <p>Initial Spread Index. Combines wind and FFMC to predict spread rate of fire.</p>
+            <span class="range">Range: 0 – 20</span>
+        </div>
+
+        <div class="card">
+            <h3>🔥 Fire Classes</h3>
+            <p>Binary classification indicating presence (1) or absence (0) of fire based on conditions.</p>
+            <span class="range">Values: 0 (No Fire), 1 (Fire)</span>
+        </div>
+
+        <div class="card">
+            <h3>🗺️ Region</h3>
+            <p>Location where data was collected. Affects climate and fire probability.</p>
+            <span class="range">0 = Bejaia, 1 = Sidi-Bel Abbes</span>
+        </div>
+    </div>
+
+    <a href="{{ url_for('predict') }}" class="btn-start">🚀 Start Prediction</a>
+</body>
+</html>

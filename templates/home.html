@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algerian Forest Fire Prediction (FWI)</title>
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f8ff 0%, #add8e6 100%); /* Light Blue to Light Sky Blue */
+            color: #333;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Container for the main form */
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            animation: fadeInScale 1s ease-out;
+            position: relative; /* For the flame animation */
+            overflow: hidden; /* Hide overflowing flame parts */
+        }
+
+        /* Header Styling */
+        h1 {
+            color: #d32f2f; /* Dark Red */
+            margin-bottom: 25px;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #d32f2f;
+            margin: 15px auto 0;
+            border-radius: 2px;
+            animation: lineDraw 1s ease-out 0.5s forwards;
+        }
+
+        /* Form Layout */
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Input Group Styling */
+        .input-group {
+            text-align: left;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input[type="number"],
+        .input-group select {
+            width: calc(100% - 20px); /* Adjust for padding */
+            padding: 12px 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+            background-color: #f9f9f9;
+        }
+
+        .input-group input[type="number"]:focus,
+        .input-group select:focus {
+            border-color: #007bff; /* Blue focus */
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            background-color: #fff;
+        }
+
+        /* Styling for select dropdown arrow */
+        .input-group select {
+            -webkit-appearance: none; /* Remove default arrow */
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 35px; /* Make space for the custom arrow */
+        }
+
+        /* Button container styling */
+        .button-container {
+            grid-column: 1 / -1; /* Span across all columns */
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #28a745; /* Green */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            flex: 1;
+            max-width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838; /* Darker Green */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Refresh Button */
+        #refreshButton {
+            padding: 10px 20px;
+            background-color: #17a2b8; /* Blue */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            flex: 1;
+            max-width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #refreshButton:hover {
+            background-color: #138496; /* Darker Blue */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #refreshButton:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Prediction Result Area */
+        #predictionResult {
+            margin-top: 35px;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #e67e22; /* Orange */
+            animation: fadeIn 1s ease-out;
+            min-height: 50px; /* Ensure space even when empty */
+        }
+
+        #predictionResult strong {
+            color: #d32f2f; /* Red for the actual value */
+            font-size: 1.2em; /* Make the value stand out more */
+        }
+
+        /* Animated Flame Background */
+        .flame {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 50% 0, #ffeb3b, #ff9800, #f44336, #d32f2f); /* Yellow to Red */
+            border-radius: 50% 50% 0 0;
+            transform: scaleY(0.8) rotate(45deg);
+            opacity: 0;
+            animation:
+                flameBurn 3s infinite ease-out,
+                flameMove 6s infinite ease-in-out;
+            filter: blur(5px);
+            z-index: -1; /* Send behind content */
+        }
+
+        .flame:nth-child(1) {
+            top: 10%;
+            left: -5%;
+            animation-delay: 0s;
+            animation-duration: 4s;
+        }
+
+        .flame:nth-child(2) {
+            bottom: 5%;
+            right: -5%;
+            animation-delay: 1s;
+            animation-duration: 5s;
+            transform: scaleY(0.9) rotate(-30deg);
+        }
+
+        .flame:nth-child(3) {
+            top: 70%;
+            left: -10%;
+            animation-delay: 2s;
+            animation-duration: 3.5s;
+            transform: scaleY(0.7) rotate(60deg);
+        }
+
+        .flame:nth-child(4) {
+            top: -5%;
+            right: 15%;
+            animation-delay: 0.5s;
+            animation-duration: 4.5s;
+            transform: scaleY(1) rotate(20deg);
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes lineDraw {
+            from {
+                width: 0;
+            }
+            to {
+                width: 60px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes flameBurn {
+            0% { opacity: 0; transform: scale(0.7) rotate(45deg); }
+            50% { opacity: 0.7; transform: scale(1.1) rotate(45deg); }
+            100% { opacity: 0; transform: scale(0.7) rotate(45deg); }
+        }
+
+        @keyframes flameMove {
+            0% { transform: translateY(0px) translateX(0px) rotate(45deg); }
+            25% { transform: translateY(-10px) translateX(5px) rotate(48deg); }
+            50% { transform: translateY(0px) translateX(0px) rotate(45deg); }
+            75% { transform: translateY(10px) translateX(-5px) rotate(42deg); }
+            100% { transform: translateY(0px) translateX(0px) rotate(45deg); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                width: 95%;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            form {
+                grid-template-columns: 1fr; /* Stack inputs on small screens */
+            }
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button[type="submit"], #refreshButton {
+                max-width: 100%;
+                width: 100%;
+                font-size: 1.1em;
+                padding: 12px 25px;
+            }
+            #predictionResult {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+
+        <h1>🔥 Algerian Forest Fire Index (FWI) Prediction</h1>
+        <p>Enter the environmental conditions to predict the Fire Weather Index (FWI).</p>
+
+        <form action="{{ url_for('predict') }}" method="POST">
+            <div class="input-group">
+                <label for="temperature">Temperature (°C):</label>
+                <input type="number" id="temperature" name="Temperature" min="0" max="50" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="rh">Relative Humidity (RH %):</label>
+                <input type="number" id="rh" name="RH" min="0" max="100" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="winds">Winds (km/h):</label>
+                <input type="number" id="winds" name="Winds" min="0" max="50" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="rain">Rain (mm):</label>
+                <input type="number" id="rain" name="Rain" min="0" max="20" step="0.01" required>
+            </div>
+
+            <div class="input-group">
+                <label for="ffm">Fine Fuel Moisture Code (FFMC):</label>
+                <input type="number" id="ffm" name="FFMC" min="0" max="100" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="dmc">Duff Moisture Code (DMC):</label>
+                <input type="number" id="dmc" name="DMC" min="0" max="200" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="isi">Initial Spread Index (ISI):</label>
+                <input type="number" id="isi" name="ISI" min="0" max="20" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="classes">Classes:</label>
+                <select id="classes" name="Classes" required>
+                    <option value="">Select Class</option>
+                    <option value="0">Not Fire</option>
+                    <option value="1">Fire</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="region">Region:</label>
+                <select id="region" name="Region" required>
+                    <option value="">Select Region</option>
+                    <option value="0">Bejaia Region</option>
+                    <option value="1">Sidi-Bel Abbes Region</option>
+                </select>
+            </div>
+
+            <div class="button-container">
+                <button type="submit">Predict FWI</button>
+                <button type="button" id="refreshButton" onclick="location.reload()">Refresh Form</button>
+            </div>
+        </form>
+
+        {% if result is not none %}
+            <div id="predictionResult">
+                🔥 The FWI PREDICTION IS <strong>{{ result }}</strong>
+            </div>
+        {% else %}
+            <div id="predictionResult">
+                Enter the details above to get a prediction.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
